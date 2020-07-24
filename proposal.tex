@@ -15,13 +15,11 @@ Hagenholzstrasse 92\\
 8052 Z\"urich\\[5mm]
 Matrikel-Nr. 13-915-632\\
 timothy.zemp@uzh.ch\\[15mm]
-%\today
-July 24, 2020 \\
+July 27, 2020 \\
 }
 \vspace*{5mm}
 \subsection*{Master's Thesis Specification}
-%
-%\section*{Title:\\  "Supporting Developers during Unit and Integration Testing by improving the TestDescriber Tool"\hspace{1em}}
+
 \section*{Separating wheat from chaff: Detecting genuine Continuous Integration configurations\hspace{1em}}
 
 Continuous Integration (CI) is a software development practice introduced by the Agile movement with the aim of delivering reliable software releases fastly \cite{Humble:2010}. Whenever a change is pushed in a remote software repository (\eg GitHub), a build server tool (\eg Travis-CI) detects this change and triggers the integration pipeline. The pipeline typically consists of several steps \eg compilation, unit testing, packaging, integration testing, installation and deploy and is usually defined within a configuration file (\eg .travis-ci.yml).
@@ -75,7 +73,7 @@ The main tasks of this thesis are:
 
 \subsection*{Thesis Structure \& Deliverable}
 
-The thesis consists of several parts. First, basic research is required in order to gain an overview of the different pipeline providers and the possibilities of CI. Afterwards, a Ground Truth Dataset (D1) is established by collecting various repositories adopting CI and labelling them accordingly. Using the data set, suitable features will be identified (RQ 1) and implemented in the classifier. Once enough features are implemented, the classifier is implemented using a prediction algorithm. We conclude the implementation by wrapping the classifier with a Docker Container (D2). This allows other research to easy use the classifier and reproduce our work. We then evaluate the classifier internally (RQ 2/3), evaluate the correlation towards \textit{reaper} (RQ 4) and finally observe the impact of the classifier on existing empirical CI-based studies (RQ 5). Lastly, the thesis is concluded with an academic report.
+The thesis consists of several parts. First, basic research is required in order to gain an overview of the different pipeline providers and the possibilities of CI. Afterwards, a Ground Truth Dataset (D1) is established by collecting various repositories adopting CI and labelling them accordingly. Using the data set, suitable features will be identified (RQ 1) and implemented in the classifier. Once enough features are implemented, the classifier is implemented using a prediction algorithm. We conclude the implementation by wrapping the classifier with a Docker Container (D2). This allows other research to easy use the classifier and reproduce our work. We then evaluate the classifier internally (RQ 2/3), evaluate the correlation towards \textit{reaper} (RQ 4) and finally observe the impact of the classifier on existing empirical CI-based studies (RQ 5). Lastly, the thesis is concluded with an academic report (D3).
 \\\\
 A detailed project plan including the milestones is attached to this proposal and can be found on page \pageref{gantt}.
 \\\\
