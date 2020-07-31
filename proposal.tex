@@ -20,83 +20,100 @@ July 27, 2020 \\
 \vspace*{5mm}
 \subsection*{Master's Thesis Specification}
 
-\section*{Separating wheat from chaff: Detecting genuine Continuous Integration configurations\hspace{1em}}
+\section*{Separating Wheat From Chaff: Detecting Genuine Continuous Integration Configurations}
 
-Continuous Integration (CI) is a software development practice introduced by the Agile movement with the aim of delivering reliable software releases fastly \cite{Humble:2010}. Whenever a change is pushed in a remote software repository (\eg GitHub), a build server tool (\eg Travis-CI) detects this change and triggers the integration pipeline. The pipeline typically consists of several steps \eg compilation, unit testing, packaging, integration testing, installation and deploy and is usually defined within a configuration file (\eg .travis-ci.yml).
+Continuous Integration (CI) is a software development practice introduced by the Agile movement with the aim of delivering reliable software releases fast~\cite{Humble:2010}.
+Whenever a change is pushed to a remote software repository (\eg GitHub), a build server tool (\eg Travis-CI) detects this change and triggers the integration pipeline.
+The pipeline typically consists of several steps, \ie compilation, unit testing, packaging, integration testing, installation and deploy and is usually defined within a configuration file (\eg {}.travis-ci.yml in case of Travis CI).
+The success of CI has also lead to a spike in empirical research on this topic that investigated the impact of CI on code review or developers.
+Studies show that, for example, CI leads to a higher code commitment frequency and reduced code chunks \cite{zhao2017impact}, different programming languages shows different adoption times (\eg Ruby as being an early-adopter, whereas Java projects tend to adopt later)\cite{vasilescu2014continuous}, and proper build configurations should be maintained in order to reduce long build durations\cite{ghaleb2019empirical}.
 
-CI has also been an uprising topic in empirical research, studying the impact of CI on code review or developer's behaviour. Notable studies showed that for example CI leads to a higher code commitment frequency and reduced code chunks \cite{zhao2017impact}, different programming languages showes different adoption times (\eg Ruby as being an early-adopter, whereas Java projects tend to adopt later)\cite{vasilescu2014continuous}, and proper build configurations should be maintained in order to reduce long build durations\cite{ghaleb2019empirical}.
-Cloud CI providers (\eg Travis-CI, Jenkins) are easy to adopt and once a repository is registered, it is sufficient to commit a configuration file into the repository. Due to this simple process, many public repositories contain such configuration files, but naturally, many of them do not use CI seriously. Unfortunately, many studies do not differentiate and typically treat every project with a configuration file as a valid instance (\eg \cite{zhao2017impact}, \cite{vasilescu2014continuous}, \cite{ghaleb2019empirical}), which might dilute the results. 
+Many free cloud CI providers exist, like Travis-CI or Jenkins, and they are easy to adopt: once a repository is registered, it is sufficient to maintain a single configuration in the repository to use the service.
+Due to this low entrance barrier, many public repositories contain such configuration files.
+Naturally, many of them do not use CI seriously though, the developers might have played around with the provider or the repository is a toy-project alltogether.
+Unfortunately, many studies do not differentiate between these cases and treat every project with a configuration file as a valid instance (\eg \cite{zhao2017impact}, \cite{vasilescu2014continuous}, \cite{ghaleb2019empirical}), which might dilute the results, which presents a real threat to validity of an empirical studies on CI.
 
-Inspired by the work of Munaiah et al.\cite{munaiah2017curating}, where they implemented and validated a tool (reaper\footnote{https://github.com/RepoReapers/reaper}) to asses the quality of a GitHub repository, we aim to lower the tread to validity of empirical studies on CI by providing a classifier which evaluate the \textit{genuineness} of pipeline configurations. Reaper provides a score which assesses the likelihood of the repository containing engineered software separating it from potential noise (\eg home work assignments, study projects, ...). The tool works by identifying different practices, called dimensions (\eg documentation, testing, history, ...) and classify them using both a Score-Based Classifier as well as a Random Forst Classifier. By establishing a Ground Truth Dataset and extracting features on the pipeline configuration, we aim to assess the quality of CI within a software repository.
+Inspired by Munaiah et al.\cite{munaiah2017curating}, who created Rreaper\footnote{https://github.com/RepoReapers/reaper}, a tool that can detect seriously engineered repositories, we want to do the same for CI configurations and create a tool that can assess the \emph{genuineness} of a pipeline configuration.
+To this end, we need to identify various \emph{features} that describe the configuration (e.g., length, complexity, or number of configuration changes), build automated extraction facilities, and train a classifier (e.g., Decision Tree, Random Forst Classifier).
+To assess the success of the approach, we will establish a manually investigated \emph{Ground Truth} dataset that can be used in an automated evaluation.
 
-\subsection*{The goals of this Master's thesis}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{Research Goals}
 
-The goal of this master's thesis is to identify genuine configurations that qualitative CI typically express with the intention to generalize those in order to identify software repositories or configuration adopting these practices. Such a classifier (similar to reaper) would accept either a CI configuration file or a software repository and output a score on the quality of the CI within the software repository. This will allow future studies to filter out software projects that do not have genuine CI configurations, picking only those who uses CI at a high level of quality.
-\\\\
-Whilst developing the classifier, the following research questions arise:
-\\\\
-\textbf{RQ 1: Why does software projects have pseudo configuration files?}\\
-First we analyze why software projects might have pseudo configurations (\ie in opposite to genuine configurations). This will enable us to extract features of genuine CI configurations.
-\\\\
-\textbf{RQ 2: What is the accuracy (Precision \& Recall) of an automated detection of meaningful CI configurations?}\\
-In RQ 2 we focus on measuring the accuracy of our classifier. By segment-comparing (approx. 10\%) of our manually labeled reference-set we calculate precision (false positive rate) and recall (false negative rate) and hence measure the accuracy of the classifier.
-\\\\
-\textbf{RQ 3: Are features extract only from the configuration sufficient to classify accurately or is a more broader context required?}\\
-The features of our classifier can be grouped into three categories, each representing a different level (\ie higher \& more difficult) on how those features are obtained: \textit{configuration-level}, \textit{repository-level} and \textit{pipeline-level}. In RQ 3 we analyze whether the lowest level of access (configuration-level) is sufficient to yield accurate classifications, or more broader features (repository-level or pipeline-level) are required.
-\\\\
-\textbf{RQ 4: Does the classification obtained by \textit{reaper} correlate with our classification?}\\
-RQ 4 aims to reveal whether there is a correlation between engineered software projects, classified by \textit{reaper} and software repositories having a genuine CI configuration (classified by our classifier).
-\\\\
-\textbf{RQ 5: What impact does the classifier have on CI-based studies?}\\
-In the last research question we want to asses the impact of the classifier to already existing empirical CI-studies. Using a large-scale dataset we aim to reproduce previous studies where one for example has analyzed the impact of the programming language towards the adoption of CI, or the impact of CI on the software's quality, but applying our classifier to the selection of the analyzed projects. 
+The goal of this master's thesis is to understand how to automatically detect genuine CI configurations, to study the impact of such a classifier, and to make it easy for future studies to avoid this threat of validity.
+To reach this goal, it is necessary to answer the following research questions:
+
+
+\begin{description}
+%
+\item[RQ1: Why do repositories contain pseudo configuration files?]
+First, we analyze the reasons why software projects contain pseudo configurations (\ie in opposite to genuine configurations).
+A side effect of this investigation is the creation of a labelled dataset of \emph{genuine} and \emph{pesudo} configuration files.
+%
+\item[RQ2: Is it possible to automatically detect genuine CI configurations?]
+This RQ provides initial proof that the thesis goal is achievable.
+We will define an infrastructure that can extract arbitrary CI-related features for existing projects, and use our ground truth dataset to train a classifier and assess its accuracy in a 10-fold cross evalaution.
+%
+\item[RQ3: What is the predictive value of different feature categories?]
+We intend to extract features on three different levels: \emph{configuration-features} can be extracted from the configuration itself (e.g., how many lines?), \emph{repository-features} can be extracted from the containing repository (e.g., how often has the config been changed?), and \emph{CI-features} can be extracted from the CI provider (e.g., how many builds have been performed in this project?). In this RQ, we will analyze whether simple configuration features are sufficient to yield accurate classifications, or whether advanced feature should be taken into consideration.
+%
+\item[RQ 4: Are \emph{engineered} projects (\emph{reaper}) also \emph{genuine}?]
+Previous work has identified \emph{engineered} projects. This does not automatically imply a \emph{genuine} CI configuration, but there might be a relation to uncover. We are interested in understanding how both populations of projects compare and whether it is necessary to have two independent classifiers.
+%
+\item[RQ 5: What impact does the classifier have on CI-based studies?]
+The last RQ presents a quantification for the motivating problem of this thesis.
+We will replicate simple statistics taken from other empirical studies and compare the results when created on \emph{genuine} and \emph{pseudo} configurations.
+%
+\end{description}
+
+\noindent
+In addition to the experimental results, this thesis will produce a usable tool that allows future studies to filter out software projects that do not have genuine CI configurations such they can focus on projects with a meaningful CI configuration.
+
+
+
+
+
 \newpage
 \subsection*{Task description}
 
 The main tasks of this thesis are:
-\\\\
-\bgroup
-\def\arraystretch{1.1}%  1 is the default, change whatever you need
-\begin{tabular}{lp{10cm}}  
- ID & Task \\
-\hline\noalign{\smallskip}
- T1 & Research on the topic of CI and the different pipeline configuration mechanism \\
- T2 & Data Collection of various repositories using CI and labeling them to establish Ground truth \\
- T3 & Definition of extracted features (RQ 1)\\
- T4 & Development of classifier\\
- T5 & Evaluate the classifier using the reference set and statistical methods (RQ 2/3)\\
- T6 & Evaluate correlation between \textit{reaper} and the classifier (RQ 4)\\
- T7 & Identify existing CI-studies and evaluate the impact of the classifier (RQ 5)\\
- T8 & Write a thesis, comprising the points above\\
-\hline
-\end{tabular}
-\egroup
+
+\begin{description}
+\item[T1] Research on the topic of CI and the different pipeline configuration mechanism
+\item[T2] Data Collection of various repositories using CI and labeling them to establish Ground truth
+\item[T3] Definition of extracted features (RQ 1)
+\item[T4] Development of classifier
+\item[T5] Evaluate the classifier using the reference set and statistical methods (RQ 2/3)
+\item[T6] Evaluate correlation between \emph{reaper} and the classifier (RQ 4)
+\item[T7] Identify existing CI-studies and evaluate the impact of the classifier (RQ 5)
+\item[T8] Write a thesis, comprising the points above
+\end{description}
 
 \subsection*{Thesis Structure \& Deliverable}
 
 The thesis consists of several parts. First, basic research is required in order to gain an overview of the different pipeline providers and the possibilities of CI. Afterwards, a Ground Truth Dataset (D1) is established by collecting various repositories adopting CI and labelling them accordingly. Using the data set, suitable features will be identified (RQ 1) and implemented in the classifier. Once enough features are implemented, the classifier is implemented using a prediction algorithm. We conclude the implementation by wrapping the classifier with a Docker Container (D2). This allows other research to easy use the classifier and reproduce our work. We then evaluate the classifier internally (RQ 2/3), evaluate the correlation towards \textit{reaper} (RQ 4) and finally observe the impact of the classifier on existing empirical CI-based studies (RQ 5). Lastly, the thesis is concluded with an academic report (D3).
 \\\\
 A detailed project plan including the milestones is attached to this proposal and can be found on page \pageref{gantt}.
-\\\\
-\begin{tabular}{lp{10cm}}  
- ID & Deliverable \\
-\hline\noalign{\smallskip}
- D1 & Ground Truth Dataset \\
- D2 & Classifier \\
- D3 & Thesis\\
-\hline
-\end{tabular}
+
+\begin{description}
+\item[D1] Ground Truth Dataset
+\item[D2] Classifier
+\item[D3] Thesis
+\end{description}
 
 \subsection*{Provided resources}
 
 The student does not need any specific resources other than the starting literature, which is referenced in this document. A workplace in the s.e.a.l. lab will be at disposal.
 
-\newpage
 \subsection*{General thesis guidelines}
 
 The typical rules of academic work must be followed. In Bernstein \cite{Bernstein:8} describes a number of guidelines which must be followed. At the end of the thesis, a final report has to be written. The report should clearly be organized, following the usual academic report structure, and has to be written in English using our s.e.a.l. \LaTeX-template. As implementing software is also part of this thesis, State-of-the-Art
 design, coding, and documentation standards for the software have to be obeyed. The product of the thesis is the Ground Truth Dataset, a working classifier as well as the written report, that summarizes the process of developing the tool and its evaluation.
 
 \subsection*{Advisors:}
+
+
+\todo{We need to clarify what to write here... I am not an assistant to Harald anymore :)}
 
 \noindent\textbf{Professor}: \\
 \noindent Prof. Dr. Harald C. Gall \\
